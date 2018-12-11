@@ -1,0 +1,4 @@
+aiohttp==3.4.4
+python-json-logger==0.1.5
+asyncpg==0.18.2
+aioredis==1.2.0

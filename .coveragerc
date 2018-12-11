@@ -1,0 +1,15 @@
+[run]
+data_file = tmp/coverage/.coverage
+source =
+    billing/
+parallel = True
+omit =
+    */migrations/*
+    */config/*
+    */test/*
+    manage.py
+    *__main__.py
+    *database.py
+
+[html]
+directory = tmp/coverage/report

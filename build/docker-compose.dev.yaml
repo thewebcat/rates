@@ -1,0 +1,79 @@
+version: '3.6'
+
+x-global-environment: &global-environment
+  C_PROJECT_STACK: __C_PROJECT_STACK__
+  C_PROJECT_NAME: __C_PROJECT_NAME__
+
+
+x-global: &global
+  environment:
+    <<: *global-environment
+    PYTHONPATH: $PWD:$PYTHONPATH
+  env_file:
+    - .env
+  restart: unless-stopped
+
+x-backend: &backend
+  <<: *global
+  image: "__C_PROJECT_NAME__-virtualenv:latest"
+  volumes:
+    - .:/code
+  depends_on:
+    - db
+    - redis
+
+volumes:
+  pgdata:
+  redisdata:
+
+
+services:
+
+  redis:
+    <<: *global
+    image: 'bitnami/redis:latest'
+    container_name: __C_PROJECT_NAME__-redis
+    environment:
+      ALLOW_EMPTY_PASSWORD: "True"
+    volumes:
+      - redisdata:/var/redis
+    expose:
+      - 6379
+
+  db:
+    <<: *global
+    image: "postgres:latest"
+    container_name: __C_PROJECT_NAME__-db
+    environment:
+      - POSTGRES_DB=rates
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./share/sql:/docker-entrypoint-initdb.d/
+    ports:
+      - 5432:5432
+
+  worker:
+    <<: *backend
+    container_name: __C_PROJECT_NAME__-worker
+    command: ["python", "-u", "rates/worker/client.py"]
+
+  backend:
+    <<: *backend
+    container_name: __C_PROJECT_NAME__-backend
+    command: ["python", "-um", "rates"]
+    ports:
+      - 8000:8000
+
+  test:
+    <<: *global
+    image: "__C_PROJECT_NAME__-virtualenv-test:latest"
+    environment:
+      PYTHONPATH: $PWD:$PYTHONPATH
+      C_PROJECT_STACK: test
+    volumes:
+      - .:/code
+    command: ["python", "-m", "billing"]
+    expose:
+      - 8000
+    restart: "no"
