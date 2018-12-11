@@ -12,7 +12,7 @@ LOGGERS = {}
 
 DATABASE = {'user': 'postgres',
             'password': 'secret',
-            'database': 'postgres',
+            'database': 'rates',
             'host': 'db'}
 
 RATES_URL = 'https://ratesjson.fxcm.com/DataDisplayer'
