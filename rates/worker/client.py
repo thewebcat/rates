@@ -62,7 +62,7 @@ class PointsUpdater:
 
 
 loop = asyncio.get_event_loop()
-update = PointsUpdater(url='https://ratesjson.fxcm.com/DataDisplayer', loop=loop)
+update = PointsUpdater(url=settings.RATES_URL, loop=loop)
 
 
 async def periodic_update():

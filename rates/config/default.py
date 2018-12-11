@@ -14,3 +14,5 @@ DATABASE = {'user': 'postgres',
             'password': 'secret',
             'database': 'postgres',
             'host': 'db'}
+
+RATES_URL = 'https://ratesjson.fxcm.com/DataDisplayer'
